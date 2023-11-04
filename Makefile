@@ -1,4 +1,6 @@
 
+SHELL=/bin/bash
+
 run:
 	make clean
 	make build
@@ -13,3 +15,6 @@ clean:
 
 view:
 	sxiv ./export/period.png
+
+hub_update:
+	@hub_ctrl ${HUB_MODE} ln "$(realpath ./src/periodviz.py)" "${HOME}/.local/bin/periodviz"
