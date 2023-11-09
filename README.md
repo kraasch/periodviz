@@ -1,6 +1,16 @@
 
 # period data
 
+## todo
+
+ - [ ] predict period for next 3 months
+ - [ ] distinguish 2 types of aches:
+  - red: day with bodily aches
+  - blue: day with mental aches
+  - purple: day with both aches
+ - [ ] add unit tests.
+ - [ ] provide as mobile app for android (maybe use another programming language for this).
+
 ## feature ideas: symptoms to track
 
  - track PMS symptoms.
