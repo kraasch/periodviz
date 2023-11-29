@@ -10,6 +10,8 @@
   - purple: day with both aches
  - [ ] add unit tests.
  - [ ] provide as mobile app for android (maybe use another programming language for this).
+ - [ ] warn if period did not return in between 23 to 35 days (which can be considered normal or around the average of 28).
+ - [ ] mark if a period happened far off the time it would have been predicted.
 
 ## feature ideas: symptoms to track
 

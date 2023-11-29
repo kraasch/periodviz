@@ -1,4 +1,6 @@
 start time,ended time,symptom,modifier,strength,comment
+2023-01-01,2023-01-02,period,active,,
+2023-01-07,2023-01-12,period,active,,
 2023-02-07,2023-02-12,period,active,,
 2023-02-11,2023-02-11,moody,bad mood,,
 2023-03-13,2023-03-13,dizziness,head,strong,

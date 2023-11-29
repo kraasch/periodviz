@@ -9,21 +9,27 @@ import matplotlib
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import pandas as pd
+from pandas import Timestamp
 import sys
 import getopt
+
+# NOTE: the period returns on average all 28 days (says google), but between 23 to 35 days is normal too.
+average_days_between_periods = 28 # TODO: calculate the value, instead of just googling.
 
 primary_types   = ['period']
 secondary_types = ['moody', 'pain', 'dizziness', 'sadness']
 primary_color   = 'red'
 secondary_color = 'red'
+predict_color   = 'blue'
 
+pred_list = []
 fill_list = []
 mark_list = []
 
 def import_csv_as_dict(filename, filter_types):
     df = pd.read_csv(filename, skiprows=[0], usecols=[0,1,2], names=['start', 'end', 'type'], sep=',', parse_dates=[0, 1])
     df = df.loc[df['type'].isin(filter_types)] # only keep allowed types.
-    dictionary = df.T.to_dict().values()
+    dictionary = df.T.to_dict()
     return dictionary
 
 def days_between(start, end):
@@ -70,10 +76,15 @@ def fill_box(ax, i, j, color):
     )
 
 def check_fill_day(year, month, day, weekday):
+    if (month, day) in pred_list:
+        return True
     if (month, day) in fill_list:
         return True
+    return False
 
 def check_fill_color_day(year, month, day, weekday):
+    if (month, day) in pred_list:
+        return predict_color
     if (month, day) in fill_list:
         return primary_color
     return "white"
@@ -81,7 +92,7 @@ def check_fill_color_day(year, month, day, weekday):
 def check_font_color_day(year, month, day, weekday):
     ### some code example.
     #if weekday == 6:  # Sunday
-    #    return "blue"
+    #    return "green"
     if (month, day) in mark_list:
         return secondary_color
     return "black"
@@ -141,6 +152,13 @@ def make_calendar(year, output_file, grid, fill):
     anual_calender(year, grid, fill)
     plt.savefig(output_file)
 
+def predict(last_3_periods, target_year):
+    last_start = last_3_periods[-1]['start']
+    last_end   = last_3_periods[-1]['end']
+    next_start = last_start + timedelta(days=average_days_between_periods)
+    next_end   = last_end   + timedelta(days=average_days_between_periods)
+    return {0: {'start': next_start, 'end': next_end, 'type': 'prediction'}}
+
 def my_args(argv):
     # variables with example values.
     # example call: python3 periodviz.py -i 'data.csv' -o 'export/period.png' -t 2023
@@ -161,11 +179,18 @@ def my_args(argv):
         elif opt in ('-o', '--ofile'):
             output_file = arg
 
-    # get actual data.
+    # open files.
     periods = import_csv_as_dict(input_file, primary_types)
-    aches = import_csv_as_dict(input_file, secondary_types)
-    spans_to_dates(periods, fill_list, target_year)
-    spans_to_dates(aches, mark_list, target_year)
+    aches   = import_csv_as_dict(input_file, secondary_types)
+
+    # add predictions.
+    last_3_periods = list(periods.values())[-3:]
+    predictions = predict(last_3_periods, target_year)
+
+    # extract dates.
+    spans_to_dates(predictions.values(), pred_list, target_year)
+    spans_to_dates(periods.values(),     fill_list, target_year)
+    spans_to_dates(aches.values(),       mark_list, target_year)
 
     # make a calendar.
     make_calendar(target_year, output_file, True, True)
